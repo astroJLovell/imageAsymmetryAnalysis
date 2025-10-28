@@ -7,4 +7,4 @@ These figures are the self-subtraction profiles, for the rotation, mirrored mino
 Original code adapted from 'rotate_subtract.py' by G. M. Kennedy, stored here: https://github.com/SebaMarino/ARKS/tree/master/analysis_scripts
 
 non-standard installs needed:
-- cmocean, seaborn, pandas, scipy, json, astropy, gofish [for plotting functionality]
+- cmocean, seaborn, pandas, scipy, json, astropy
