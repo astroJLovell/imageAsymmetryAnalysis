@@ -1,5 +1,5 @@
 # imageAsymmetryAnalysis
-## Toolkit advanced for ARKS Paper VI (Asymmetries &amp; Offsets). 
+## Tool used in ARKS Paper VI (Asymmetries &amp; Offsets). 
 
 The code includes the scripts to reproduce figures C1, C2, C3, C4 and C5 from ARKS VI.
 These figures are the self-subtraction profiles, for the rotation, mirrored minor axis, and mirrored major axis.
