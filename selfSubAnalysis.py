@@ -148,8 +148,8 @@ def sourcePars(locsummary, ID, param_csv):
   # return summary data to use in sample scripts
   dats   = pd.read_csv(locsummary+param_csv)
   datsID = dats[dats['name']==ID]
-  inc, PA, x0, y0 = float(datsID['i']), float(datsID['PA']), float(datsID['deltaRA']), float(datsID['deltaDec'])
-  return PA, x0, y0
+  inc, PA, x0, y0, dpc = float(datsID['i']), float(datsID['PA']), float(datsID['deltaRA']), float(datsID['deltaDec']), float(datsID['dpc'])
+  return PA, x0, y0, dpc
 
 def sourceParsJSON(jsonfile_loc, ID, robust):
   # return rms value from image depending on robust param
@@ -232,7 +232,7 @@ for f in fs:
 
             crop = crops[k]
             diskphaseoffset = offFlag[k]
-            init, x0, y0 = sourcePars(locsummary, sourceID, param_csv)
+            init, x0, y0, dpc = sourcePars(locsummary, sourceID, param_csv)
             imcropExtraS = imcropExtra[k]
             ellXS, ellYS = ellX[k],ellY[k]
             imInConts    = imConts[k]
@@ -368,7 +368,7 @@ for f in fs:
     ax[0].contour(im, levels=levelsImgIn, origin='lower',colors='k')
     ax[0].text(s=f'{sourceID}',           x=titlex, y=titley, fontsize=28, color='w', path_effects=[pe.withStroke(linewidth=3, foreground="black")])
     ax[0].plot([crop-x0],[crop+y0],marker='+',color='w') #negative x0 needed as we're plotting RA & Decl.
-
+    
     ## Bespoke contours for some systems to help illustrate the presence of asymmetries
     if '39060' in f or '61005' in f or '131488' in f or '131835' in f:
       ax[0].contour(PA_flipsublr, origin='lower', levels=levelsRes, cmap='RdGy_r')    
@@ -444,7 +444,7 @@ for f in fs:
     ax[3].set_ylim(cropminIm, cropmaxIm)
 
     
-    ## add beams to each sub-panel
+    ## add beams to each sub-panel, scale-bar to first image
     ellipse0 = Ellipse((ell_x,  ell_y), width=beamMin/pixelL, height=beamMaj/pixelL, angle=beamPA, facecolor='none', edgecolor='w', hatch='//')
     ellipse1 = Ellipse((ell_x,  ell_y), width=beamMin/pixelL, height=beamMaj/pixelL, angle=beamPA, facecolor='none', edgecolor='black', hatch='//')
     ellipse2 = Ellipse((ell_x,  ell_y), width=beamMin/pixelL, height=beamMaj/pixelL, angle=beamPA, facecolor='none', edgecolor='black', hatch='//')
@@ -453,6 +453,12 @@ for f in fs:
     ax[1].add_patch(ellipse1)
     ax[2].add_patch(ellipse2)
     ax[3].add_patch(ellipse3)
+
+    
+    ## add a 50au scale bar
+    xspan = 50/ (pixelL*dpc) ## num pixels for a 50au scale bar
+    ax[0].plot([cropmaxIm*0.925,cropmaxIm*0.925-xspan], [ell_y,ell_y], color='w', linewidth=6.5)
+    #ax[0].plot([cropminIm*1.05,cropminIm*1.05+xspan], [cropminIm*1.05, cropminIm*1.05], color='k', linewidth=7)
 
     
     # Make colorbars across top of the image panels. OFF as standard in ARKS VI. Note this is fiddly and requires trial-and-error per system
