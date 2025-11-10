@@ -61,12 +61,13 @@ crops = {'61005':  500, '15257':  200, '76582':  110, '84870':  150, '95086':  2
          '107146': 300, '197481': 300, '206893': 400, '218396': 150, '39060':  350, 
          '92945':  400, '9672':   550, '15115':  325, '14055':  425}
 
-# set to False for all sources with insignificant offsets. See paper for details on HD15115, HD32297 and HD109573
+# set to False for all sources with insignificant offsets (HD15115, HD32297 and HD109573: significant)
+# & those where residuals were vastly improved with an offset included (131488, 131835)
 offFlag= {'61005':  False, '15257':  False, '76582':  False, '84870':  False, '95086':  False,
-          '109573': True, '121617': False, '131835': False, '145560': False, '161868': False,
-          '170773': False, '9340':   False, '131488': False, '10647':  False, '32297':  True,
+          '109573': True,  '121617': False, '131835': True,  '145560': False, '161868': False,
+          '170773': False, '9340':   False, '131488': True,  '10647':  False, '32297':  True,
           '107146': False, '197481': False, '206893': False, '218396': False, '39060':  False,  
-          '92945':  False, '9672':   False, '15115':  True, '14055':  False}
+          '92945':  False, '9672':   False, '15115':  True,  '14055':  False}
 
 titleLeft= {'61005':  False, '15257':  False, '76582':  True,  '84870':  False, '95086':  False,
             '109573': False, '121617': False, '131835': False, '145560': False, '161868': False,
@@ -254,7 +255,7 @@ for f in fs:
               rms = sourceParsJSON(locjsonpar+jsonfile, sourceIDns, rob_val)
 
             # Translate image offsets to scipy-readable values, and/or alter these to values derived in ARKS III with 'ARKSIIIOffsets=True' (Zawadzki+)
-            x0, y0 = x0/pixelL, y0/pixelL #since image rot requires pixel units, and params csv is in arcsecs
+            x0, y0 = x0/pixelL, y0/pixelL #since image rot requires pixel units, and params csv is in arcsecs. These match values in table 3, ARKS I
             if diskphaseoffset==False: ## this is in general set to FALSE for ARKS
                 x0, y0 = offXY[k][0]/(pixelL*1000.),offXY[k][1]/(pixelL*1000.) #Table A.1: stellar position
             ARKSIIIoffsets = False ## This can be turned on to use the centroid values from ARKS Paper III
@@ -371,11 +372,14 @@ for f in fs:
     
     ## Bespoke contours for some systems to help illustrate the presence of asymmetries
     if '39060' in f or '61005' in f or '131488' in f or '131835' in f:
-      ax[0].contour(PA_flipsublr, origin='lower', levels=levelsRes, cmap='RdGy_r')    
+      #ax[0].contour(PA_flipsublr, origin='lower', levels=levelsRes, cmap='RdGy_r')    
+      ax[0].contour(resid_SNRmap_flipsub_lr, origin='lower', levels=levelsRes_SNR, cmap='RdGy_r')  ## these are SNR contours, accounting for pb-correction
     elif '218396' in f:
-      ax[0].contour(PA_flipsubud, origin='lower', levels=levelsRes, cmap='RdGy_r')    
+      #ax[0].contour(PA_flipsubud, origin='lower', levels=levelsRes, cmap='RdGy_r')
+      ax[0].contour(resid_SNRmap_flipsub_ud, origin='lower', levels=levelsRes_SNR, cmap='RdGy_r')  ## these are SNR contours, accounting for pb-correction
     else:
-      ax[0].contour(PA_rotsub, origin='lower', levels=levelsRes, cmap='RdGy_r')    
+      #ax[0].contour(PA_rotsub, origin='lower', levels=levelsRes, cmap='RdGy_r')    
+      ax[0].contour(resid_SNRmap_rotsub, origin='lower', levels=levelsRes_SNR, cmap='RdGy_r')  ## these are SNR contours, accounting for pb-correction
 
     smoothIm = False
     if smoothIm == True: #### WARNING -- USE AT OWN RISK -- THIS FUNCTIONALITY HAS NOT YET BEEN TESTED -- WAS NOT USED IN ARKS
